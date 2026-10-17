@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Package IPK
-        run: ares-package . --outdir dist
+        run: ares-package --no-minify . --outdir dist
 
       - name: List output
         run: ls -la dist/
