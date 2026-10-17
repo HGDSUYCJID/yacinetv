@@ -11,7 +11,7 @@
   "disableBackHistoryAPI": true,
   "handlesRelaunch": true,
   "requiredPermissions": [
-    "internet",
-    "media"
-  ]
+    "internet"
+  ],
+  "requiredACG": []
 }
