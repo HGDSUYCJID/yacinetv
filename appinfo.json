@@ -1,0 +1,17 @@
+{
+  "id": "com.alpha.yacinetv",
+  "version": "1.0.0",
+  "vendor": "ALPHA",
+  "type": "web",
+  "main": "index.html",
+  "title": "Yacine TV",
+  "icon": "icon.png",
+  "largeIcon": "icon.png",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "handlesRelaunch": true,
+  "requiredPermissions": [
+    "internet",
+    "media"
+  ]
+}
