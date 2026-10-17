@@ -1,0 +1,59 @@
+name: Build Yacine TV IPK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install webOS CLI
+        run: npm install -g @webos-tools/cli
+
+      - name: Generate icon if missing
+        run: |
+          if [ ! -f icon.png ]; then
+            python3 -c "
+          import struct, zlib
+          w=h=256
+          raw=b''.join(b'\x00' + b'\x00\x50\xc8\xff'*w for _ in range(h))
+          def chunk(t,d):
+              c=t+d
+              return struct.pack('>I',len(d))+c+struct.pack('>I',zlib.crc32(c)&0xffffffff)
+          ihdr=struct.pack('>IIBBBBB',w,h,8,6,0,0,0)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',ihdr)+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          open('icon.png','wb').write(png)
+          "
+          fi
+
+      - name: Package IPK
+        run: ares-package . --outdir dist
+
+      - name: List output
+        run: ls -la dist/
+
+      - name: Upload IPK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yacinetv-ipk
+          path: dist/*.ipk
+          retention-days: 90
+
+      - name: Create Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Yacine TV v1.0.${{ github.run_number }}
+          files: dist/*.ipk
+          token: ${{ secrets.GITHUB_TOKEN }}
